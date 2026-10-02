@@ -53,8 +53,11 @@ jobs:
             exit 1
           fi
           # Why: Git Bash's GNU tar can't take Windows paths; the desktop build needs Windows' tar.
+          # Only tar.exe goes first (all of System32 would bring WSL's bash.exe ahead of Git's).
           if [ "$RUNNER_OS" = Windows ]; then
-            export PATH="/c/Windows/System32:$PATH"
+            mkdir -p "$RUNNER_TEMP/windows-tar"
+            cp /c/Windows/System32/tar.exe "$RUNNER_TEMP/windows-tar/tar.exe"
+            export PATH="$RUNNER_TEMP/windows-tar:$PATH"
           fi
           # Why quiet: the log is public; on a failure only its last lines are shown.
           quiet() { "$@" > "$RUNNER_TEMP/step.log" 2>&1 || { tail -n 30 "$RUNNER_TEMP/step.log"; exit 1; }; }
