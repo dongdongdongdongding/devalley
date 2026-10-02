@@ -1,0 +1,134 @@
+# The public repository's release workflow (dongdongdongdongding/devalley, .github/workflows/
+# release.yml); this is the copy kept with the source. It builds the installers from this
+# private repository and publishes them on the public Releases page, so releases don't spend
+# this repository's Actions minutes. It only builds: checks and tests run before a release, on
+# the source side. Its logs are public, so its steps print as little as they can.
+#
+# Started by hand only (Actions → Release → Run workflow, or `gh workflow run release.yml
+# -R dongdongdongdongding/devalley -f version=X.Y.Z`), so no pull request or fork can reach the
+# CORE_READ_TOKEN secret: a fine-grained token with Contents: Read-only on devalley-core.
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version to release (the source must carry the tag vVERSION)
+        required: true
+
+permissions:
+  contents: read
+
+env:
+  SOURCE_REPO: dongdongdongdongding/devalley-core
+  VERSION: ${{ inputs.version }}
+
+jobs:
+  build:
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Get the source
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.SOURCE_REPO }}
+          ref: v${{ inputs.version }}
+          token: ${{ secrets.CORE_READ_TOKEN }}
+          path: core
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Build the installers
+        shell: bash
+        working-directory: core
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+        run: |
+          if [ "$(node -p "require('./package.json').version")" != "$VERSION" ]; then
+            echo "The source at v$VERSION isn't version $VERSION" >&2
+            exit 1
+          fi
+          # Why quiet: the log is public; on a failure only its last lines are shown.
+          quiet() { "$@" > "$RUNNER_TEMP/step.log" 2>&1 || { tail -n 30 "$RUNNER_TEMP/step.log"; exit 1; }; }
+          quiet npm ci --no-audit --no-fund
+          quiet npm run build
+          cd desktop
+          quiet npm ci --no-audit --no-fund
+          quiet npm run dist
+          if [ "$RUNNER_OS" = Windows ]; then
+            cli=release/win-unpacked/resources/cli
+          else
+            cli=release/mac-arm64/Devalley.app/Contents/Resources/cli
+          fi
+          node -e "if (typeof require('./$cli/node_modules/@lydell/node-pty').spawn !== 'function') process.exit(1)"
+          for file in release/*.exe release/*.dmg; do [ -e "$file" ] && basename "$file"; done
+      - uses: actions/upload-artifact@v4
+        with:
+          name: installers-${{ matrix.os }}
+          path: |
+            core/desktop/release/*.exe
+            core/desktop/release/*.dmg
+          if-no-files-found: error
+          retention-days: 1
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: page
+      - name: Get the page from the source
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.SOURCE_REPO }}
+          ref: v${{ inputs.version }}
+          token: ${{ secrets.CORE_READ_TOKEN }}
+          path: core
+          sparse-checkout: public
+          persist-credentials: false
+      - name: Bring the download page up to date
+        run: |
+          rsync -a --delete --exclude .git --exclude .github core/public/ page/
+          rm -rf core
+          cd page
+          git add -A
+          if git diff --cached --quiet; then
+            echo "The download page is already up to date."
+          else
+            git -c user.name='github-actions[bot]' \
+              -c user.email='41898282+github-actions[bot]@users.noreply.github.com' \
+              commit -q -m "Devalley $VERSION"
+            git push -q
+          fi
+      - uses: actions/download-artifact@v4
+        with:
+          path: installers
+          merge-multiple: true
+      - name: Publish the installers
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="v$VERSION"
+          cat > notes.md <<'NOTES'
+          ## Install
+
+          - **Windows:** run `Devalley-*-win-x64-setup.exe` to install (installing over an older version closes it first), or `Devalley-*-win-x64-portable.exe` to run without installing. On the SmartScreen warning choose **More info** → **Run anyway** (the app isn't code-signed yet).
+          - **macOS:** open the `.dmg` for your Mac (`arm64` for Apple silicon, `x64` for Intel) and drag Devalley to Applications. The first time, right-click it and choose **Open**.
+
+          Then click **Connect Claude Code** in the village, and any `claude` session moves in on its next prompt.
+          NOTES
+          if gh release view "$tag" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload "$tag" installers/* --repo "$GITHUB_REPOSITORY" --clobber
+          else
+            gh release create "$tag" installers/* \
+              --repo "$GITHUB_REPOSITORY" \
+              --title "Devalley $VERSION" \
+              --notes-file notes.md
+          fi
