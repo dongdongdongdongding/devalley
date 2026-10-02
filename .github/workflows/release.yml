@@ -52,6 +52,10 @@ jobs:
             echo "The source at v$VERSION isn't version $VERSION" >&2
             exit 1
           fi
+          # Why: Git Bash's GNU tar can't take Windows paths; the desktop build needs Windows' tar.
+          if [ "$RUNNER_OS" = Windows ]; then
+            export PATH="/c/Windows/System32:$PATH"
+          fi
           # Why quiet: the log is public; on a failure only its last lines are shown.
           quiet() { "$@" > "$RUNNER_TEMP/step.log" 2>&1 || { tail -n 30 "$RUNNER_TEMP/step.log"; exit 1; }; }
           quiet npm ci --no-audit --no-fund
