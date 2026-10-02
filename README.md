@@ -7,6 +7,7 @@ A pixel-art village where every coding-agent session is a resident: Claude Code,
 - **Repositories and branches become cottages** on streams off the main river.
 - **Messages from outside reach the village.** The postman brings Slack, GitHub or any other message to the chief as a speech bubble.
 - **The chief keeps your to-dos** on the notice board by the town hall.
+- **Play as the chief:** walk the chief around the village with the arrow keys, and press Space at any workplace to lend a hand. Every few swings earn a little XP, shown as a coin over the chief's head.
 - **A village journal** fills a square for every day you work, like GitHub's contribution graph. It earns XP, levels and coins, and the coins buy decorations for the valley and clothes for its residents.
 
 ![The village with residents working, one asking a question and one finished](docs/assets/village-preview.png)
@@ -80,8 +81,9 @@ You build and fix data pipelines. Prefer small, reversible migrations.
 ## Residents
 
 - **One resident per agent and project.** The same agent in the same project is the same resident every time, with the same name and look. A second session of it running at the same time joins as a companion: the family's skin and hair (or kind and fur), an outfit and a name of its own.
+- **The chief at work:** the arrow keys walk the chief around the village (the village page, or the village window once it has focus), keeping to paths and fields. At a workplace, each press of Space swings that place's tool, and the place reacts as it does for residents: a tree falls, ore breaks, a fish bites. Now and then a swing earns 1 to 3 XP (1 most often), shown as a coin and the amount over the chief's head, up to 50 XP a day. Click a resident and the chief strolls over again, as before.
 - **Critters:** about one resident in four is a small round critter instead of a person: a cub, bunny, kitty, chick, pup, hamster or frog, in a soft fur. Critters wear no hair or clothes, but hats, accessories and things on the back suit them, and they do all the same work.
-- **Looks:** residents are dressed from the free parts of the wardrobe (eyes, hair, tops, bottoms, shoes, hats, accessories), with more styles to buy: an afro, a hime cut, a mohawk, a sailor top, a puffer, a tutu, a crown, a chef's hat, angel wings, a guitar and more. A vocation adds its colour: green for planners, orange for developers, teal for researchers, red for reviewers, pink for designers, yellow for marketers; a villager wears a colour of its own.
+- **Looks:** residents are dressed from the free parts of the wardrobe (eyes, hair, tops, bottoms, shoes, hats, accessories), with more styles to buy: an afro, a hime cut, double braids, a mohawk, a sailor top, a Hawaiian shirt, a puffer, a tutu, a plaid skirt, a crown, a bear hood, a chef's hat, angel wings, a teddy backpack, bunny slippers and more. A vocation adds its colour: green for planners, orange for developers, teal for researchers, red for reviewers, pink for designers, yellow for marketers; a villager wears a colour of its own.
 - **Workplaces:** a working resident goes to a workplace: its vocation's, or, without one, wherever chance sends it for each task (it moves on every few minutes). There it does the place's work with the place's tool, and the place changes as it is worked:
   - **Lumberyard:** each woodcutter fells the tree in front of it; the tree falls, its logs fly onto the woodpile, and a new one grows from the stump, faster while someone tends it.
   - **Mine:** rocks crack and burst, and their ore goes into the minecart, which rolls into the tunnel when it's full.
