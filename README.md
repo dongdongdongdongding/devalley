@@ -47,7 +47,7 @@ Devalley follows other agent CLIs the same way, from every folder and terminal:
 
 Open **Connect agents** from the village header, the chief's card or the tray menu. Each connection goes into that agent's own user-level settings, with a dated backup next to them, so it applies wherever you start it. It never prints anything or gets in the agent's way.
 
-Sessions of any agent move in even without a connection, or before their first prompt: Devalley notices them running and tells working from resting on its own.
+Sessions of any agent move in even without a connection, or before their first prompt: Devalley notices them running and tells working from resting on its own. Sessions in the Codex desktop app (and Codex in your IDE) move in too, working while a turn runs and cheering when it ends; their card brings the Codex app forward.
 
 ## Invite residents
 
