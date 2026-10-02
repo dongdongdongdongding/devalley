@@ -63,7 +63,7 @@ A session you start yourself (plain `claude` in a terminal) can only be watched.
 - **Talk:** click the resident and choose **Talk**. Claude answers your question on the side, in its terminal, without stopping its work or adding to the conversation. Devalley waits while you have something half-typed in that terminal, or while Claude is waiting for a permission answer. Other agents get a plain message while they're idle.
 - **Watch:** **Watch** shows that session's screen live, read-only.
 
-Talking needs Node.js 20 or newer on your PATH; without it an invited resident still moves in, but can only be watched.
+Talking needs Node.js 22.13 or newer on your PATH; without it an invited resident still moves in, but can only be watched.
 
 ### Vocations
 
@@ -138,7 +138,7 @@ The app remembers which windows were on and where the village window was. Its tr
 ## Your data
 
 - **It stays on your computer.** The village listens on this computer only, isn't reachable from the network, and other websites can't post to it.
-- **What leaves:** each agent's quota check, sent to that agent's own service with the sign-in it already has, and, once you connect Slack, the village's own connection to Slack with your app's tokens.
+- **What leaves:** each agent's quota check, sent to that agent's own service with the sign-in it already has; once you connect Slack, the village's own connection to Slack with your app's tokens; and, from the desktop app, a look at this page's latest release when it starts and once a day (nothing about you is sent), so the tray and the village window's menu can offer a newer version.
 - **What's kept:** your journal, outfits, inbox, to-dos and Slack tokens live in `~/.devalley/`, the tokens readable only by you.
 - **What changes:** connecting an agent adds Devalley to that agent's user-level settings, with a dated backup of them next to them.
 
