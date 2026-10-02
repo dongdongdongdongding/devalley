@@ -72,7 +72,8 @@ jobs:
             cli=release/mac-arm64/Devalley.app/Contents/Resources/cli
           fi
           node -e "if (typeof require('./$cli/node_modules/@lydell/node-pty').spawn !== 'function') process.exit(1)"
-          for file in release/*.exe release/*.dmg; do [ -e "$file" ] && basename "$file"; done
+          shopt -s nullglob
+          for file in release/*.exe release/*.dmg; do basename "$file"; done
       - uses: actions/upload-artifact@v4
         with:
           name: installers-${{ matrix.os }}
