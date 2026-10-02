@@ -100,13 +100,14 @@ You build and fix data pipelines. Prefer small, reversible migrations.
 ## Inbox and to-dos
 
 - **Inbox:** messages from outside the village (Slack, GitHub, CI, anything) go to the village inbox. The postman waits by the red post box at the gate, whose flag is up while anything is unread. He brings each new message to the chief and holds it up as a speech bubble with its sender for ten seconds: up to four at once, the newest at the bottom, each cut to two lines. The whole message waits in the inbox: open it from the header, the village window's ☰ menu, the postman or the post box. Opening a Slack message brings the Slack app forward; any other message opens its link.
-- **On the desktop strip** the postman walks in with the same bubbles and, while mail is still unread, waits with an envelope; click him to open the latest message. A setting chooses where he shows up: the village and the strip, the village only, or nowhere (messages are still kept).
+- **Slack, as it happens:** connect Slack in the inbox and the messages meant for you arrive the moment they're sent: direct messages and group DMs, mentions of you, replies in threads you started or replied in, and, if you like, every message in channels you follow. Each one shows who sent it and where (DM, #channel, or a thread), and opening it takes you to Slack. You turn each kind on or off there.
+- **On the desktop strip** the postman walks in to the chief with the same bubbles and, while mail is still unread, waits with an envelope; click him to open the latest message. A setting chooses where he shows up: the village and the strip, the village only, or nowhere (messages are still kept).
 - **To-dos:** the notice board by the town hall holds your own to-do list: add, edit, tick off, reorder and delete. The board shows a paper for each open one. Each one you finish is worth 3 XP, up to five a day.
 - **For your agents:** Devalley's MCP server gives your agents the village as tools: send a message to the inbox, read the inbox, add and list your to-dos, and see how many residents are working, asking for you, blocked, done or resting. **Connect agents** registers it with Claude Code and Codex for you (settings backed up first).
 
 ![The postman bringing messages to the chief](docs/assets/village-postman.png)
 
-Only programs on this computer can post to the village, so a web service such as a Slack workflow or a GitHub webhook can't reach it. Relay through an agent running here instead: give Claude Code a Slack MCP server and Devalley's, then ask something like "check #dev every few minutes; when a new message comes in, send it to the village with its channel and link".
+To connect Slack, open the inbox and follow its three steps: **Create the Devalley app in Slack** (everything is filled in; pick your workspace), install it, and paste the two tokens it gives you. The app is yours, in your workspace; some workspaces need an admin to approve it. Other web services, such as a GitHub webhook, can't reach the village, which only listens on this computer; send those through an agent running here with Devalley's MCP server.
 
 ## Keep an eye on things
 
@@ -122,7 +123,7 @@ Only programs on this computer can post to the village, so a web service such as
 
 The app keeps your residents in front of you while you work, in two ways you can switch on and off from its tray icon:
 
-- **Walking residents** stroll along the bottom of your screen, just above the taskbar or dock. The window is transparent and every click passes through to whatever is underneath, except on a resident. A resident with a question hurries to the middle of the screen and hops with a **?** until you answer. One that finishes a turn jumps and cheers **Done!**; click it once you've seen the work and it walks off the screen, coming back when it starts its next task (the village window keeps everyone). Residents that go to rest walk off the same way; only those working, asking or just finished walk along the screen. Click any other resident for its card, where you can talk to it or bring its terminal forward.
+- **Walking residents** stroll along the bottom of your screen, just above the taskbar or dock, and the chief, in its outfit, is always out there with them; click the chief for its card or to dress it. The window is transparent and every click passes through to whatever is underneath, except on a resident. A resident with a question hurries to the middle of the screen and hops with a **?** until you answer. One that finishes a turn jumps and cheers **Done!**; click it once you've seen the work and it walks off the screen, coming back when it starts its next task (the village window keeps everyone). Residents that go to rest walk off the same way; only those working, asking or just finished walk along the screen. Click any other resident for its card, where you can talk to it or bring its terminal forward.
 - **Village window** is the whole village as a small always-on-top window with no frame. Drag its corner to resize it, and the map zooms to fit. Hover it for its title bar, where you can drag it; its menu (☰) holds CPU and memory, long-idle residents, agent usage, tags, the inbox, connecting agents, invites, the journal and hiding the window.
 
 ![Residents walking along the bottom of the screen](docs/assets/desktop-walkers.png)
@@ -134,8 +135,8 @@ The app remembers which windows were on and where the village window was. Its tr
 ## Your data
 
 - **It stays on your computer.** The village listens on this computer only, isn't reachable from the network, and other websites can't post to it.
-- **What leaves:** only each agent's quota check, sent to that agent's own service with the sign-in it already has.
-- **What's kept:** your journal, outfits, inbox and to-dos live in `~/.devalley/`.
+- **What leaves:** each agent's quota check, sent to that agent's own service with the sign-in it already has, and, once you connect Slack, the village's own connection to Slack with your app's tokens.
+- **What's kept:** your journal, outfits, inbox, to-dos and Slack tokens live in `~/.devalley/`, the tokens readable only by you.
 - **What changes:** connecting an agent adds Devalley to that agent's user-level settings, with a dated backup of them next to them.
 
 ## History
