@@ -1,6 +1,6 @@
 # Devalley
 
-A pixel-art village where every coding-agent session is a resident: Claude Code, Codex, Gemini CLI, Qwen Code, Copilot CLI, Aider, OpenCode and more. It works with them in any folder and any terminal, IDE or ADE: iTerm, Windows Terminal, PowerShell, the VS Code or Cursor terminal, or a tool that launches the agent for you.
+A pixel-art village where every coding-agent session is a resident: Claude Code, Codex, Gemini CLI, Qwen Code, Copilot CLI, Aider, OpenCode and more. It works with them in any folder and any terminal, IDE or ADE: iTerm, Windows Terminal, PowerShell, the VS Code or Cursor terminal, or a tool that launches the agent for you. It also works inside WSL and in a terminal run as administrator.
 
 - **Residents show what their agent is doing.** Working sessions go to work at the farm, mine, lake, ranch, garden, market or lumberyard, and the valley changes as they work: trees fall and grow back, rocks break, fish are landed, crops ripen and are harvested. A question or permission prompt raises a **?** bubble, and a finished turn cheers **Done!**
 - **Each agent in each project is one resident,** with the same name and look every session. About one in four is born a small round critter (a cub, bunny, kitty, chick, pup, hamster or frog). Dress them in the wardrobe, and the chief too.
@@ -47,6 +47,8 @@ Devalley follows other agent CLIs the same way, from every folder and terminal:
 ![Connecting other agents](docs/assets/village-agents.png)
 
 Open **Connect agents** from the village header, the chief's card or the tray menu. Each connection goes into that agent's own user-level settings, with a dated backup next to them, so it applies wherever you start it. It never prints anything or gets in the agent's way.
+
+On Windows, connecting an agent connects it inside WSL too. Every running WSL distribution where that agent has been used gets the same connection, and one you start later is connected within a minute. Agents without a connection (Aider, OpenCode, Cursor CLI) are seen running inside WSL as well.
 
 Sessions of any agent move in even without a connection, or before their first prompt: Devalley notices them running and tells working from resting on its own. Sessions in the Codex desktop app (and Codex in your IDE) move in too, working while a turn runs and cheering when it ends; their card brings the Codex app forward.
 
@@ -119,7 +121,7 @@ To connect Slack, open the inbox and follow its three steps: **Create the Devall
 - **Agent usage:** a strip along the bottom of the map shows each agent's quota on its own line, by its platform's logo (used share and time until it resets); click it for how much of each plan is left and how many tokens each agent used today and in the last 7 days, by project. Quotas (Claude Code, Codex, Gemini CLI) use the sign-in each CLI already has, so there's nothing to sign in to in Devalley; an expired sign-in shows a **Sign in** button that opens that CLI's login in a terminal. Tokens (Claude Code, Codex, Gemini CLI, Copilot CLI) are counted from the session records the agents keep on your computer.
 - **Terminal:** a resident's card brings forward the window its agent runs in: the IDE (VS Code, Cursor), the terminal (Windows Terminal, Terminal, iTerm) or the app (Claude, ChatGPT). Linux needs `xdotool`.
 - **Zoom:** scroll on the map to zoom in around the cursor, and drag to look around. In the village window the map always fills the window, with no empty edges.
-- **Stop:** a resident's card has a **Stop** button that ends its session after you confirm. Devalley only ends a session when it's sure which one it is; when it can't tell (several sessions of the same agent in the same folder), end it in its terminal. A resident whose session is already gone just moves out.
+- **Stop:** a resident's card has a **Stop** button that ends its session after you confirm. Devalley only ends a session when it's sure which one it is; when it can't tell (several sessions of the same agent in the same folder), end it in its terminal. A session started in a terminal run as administrator can't be ended from the village; end it in its terminal. A resident whose session is already gone just moves out.
 - **Long-idle residents:** sessions that have rested for more than 2 days (forgotten terminals, mostly) are counted in the header. Its list shows each one's folder and command, and stops the ones you pick, or all of them.
 
 ## On your desktop
@@ -140,7 +142,7 @@ The app remembers which windows were on and where the village window was. Its tr
 - **It stays on your computer.** The village listens on this computer only, isn't reachable from the network, and other websites can't post to it.
 - **What leaves:** each agent's quota check, sent to that agent's own service with the sign-in it already has; once you connect Slack, the village's own connection to Slack with your app's tokens; and, from the desktop app, a look at this page's latest release when it starts and once a day (nothing about you is sent), so the tray and the village window's menu can offer a newer version.
 - **What's kept:** your journal, outfits, inbox, to-dos and Slack tokens live in `~/.devalley/`, the tokens readable only by you.
-- **What changes:** connecting an agent adds Devalley to that agent's user-level settings, with a dated backup of them next to them.
+- **What changes:** connecting an agent adds Devalley to that agent's user-level settings (inside WSL too, on Windows), with a dated backup of them next to them.
 
 ## History
 
