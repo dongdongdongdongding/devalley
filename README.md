@@ -18,12 +18,12 @@ A pixel-art village where every coding-agent session is a resident: Claude Code,
 
 ## Download
 
-Get the installer for your system from the **[Releases](https://github.com/dongdongdongdongding/devalley/releases)** page:
+Get the installer for your system from **[devalley.app/get](https://devalley.app/get)**, or straight from these links, which always give the latest version:
 
-- **Windows:** `Devalley-…-win-x64-setup.exe` to install, or `…-portable.exe` to run without installing. The app isn't code-signed yet, so the first launch shows SmartScreen: choose **More info**, then **Run anyway**.
-- **macOS:** the `.dmg` for Apple silicon (`arm64`) or Intel (`x64`). Drag Devalley to Applications, and the first time, right-click it and choose **Open**.
+- **Windows:** the [installer](https://devalley.app/download/latest/win-setup), or the [portable build](https://devalley.app/download/latest/win-portable) to run without installing. The app isn't code-signed yet, so the first launch shows SmartScreen: choose **More info**, then **Run anyway**.
+- **macOS:** the `.dmg` for [Apple silicon](https://devalley.app/download/latest/mac-arm64) or [Intel](https://devalley.app/download/latest/mac-x64). Drag Devalley to Applications, and the first time, right-click it and choose **Open**.
 
-Installing a new version over an old one closes the running app first. The tray menu shows the version you have and links to **Get the latest version…**.
+Installing a new version over an old one closes the running app first. The tray menu shows the version you have, and when a newer one is out, **Get …** with its number: the Windows installer downloads and installs it right there; on macOS and with the portable build it opens the download page. Each release's notes are on the [Releases](https://github.com/dongdongdongdongding/devalley/releases) page.
 
 The first time, the village asks to **Connect Claude Code**. Sessions that are already running join on their next prompt, with no restart; new ones move in as soon as you send them a prompt.
 
@@ -146,7 +146,7 @@ The app remembers which windows were on and where the village window was. Its tr
 ## Your data
 
 - **It stays on your computer.** The village listens on this computer only, isn't reachable from the network, and other websites can't post to it.
-- **What leaves:** each agent's quota check, sent to that agent's own service with the sign-in it already has; once you connect Slack, the village's own connection to Slack with your app's tokens; and, from the desktop app, a look at this page's latest release when it starts and once a day (nothing about you is sent), so the tray and the village window's menu can offer a newer version.
+- **What leaves:** each agent's quota check, sent to that agent's own service with the sign-in it already has; once you connect Slack, the village's own connection to Slack with your app's tokens; and, from the desktop app, a look at devalley.app for a newer version when it starts and once a day (nothing about you is sent), so the tray and the village window's menu can offer it.
 - **What's kept:** your journal, outfits, inbox, to-dos and Slack tokens live in `~/.devalley/`, the tokens readable only by you.
 - **What changes:** connecting an agent adds Devalley to that agent's user-level settings (inside WSL too, on Windows), with a dated backup of them next to them.
 
