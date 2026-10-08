@@ -1,12 +1,16 @@
 # The public repository's release workflow (dongdongdongdongding/devalley, .github/workflows/
 # release.yml); this is the copy kept with the source. It builds the installers from this
-# private repository and publishes them on the public Releases page, so releases don't spend
-# this repository's Actions minutes. It only builds: checks and tests run before a release, on
-# the source side. Its logs are public, so its steps print as little as they can.
+# private repository, uploads them to devalley.app (the site's R2 bucket, where the download
+# page, the app's update check and the Windows installer's updater read them) and publishes the
+# release notes on the public Releases page, so releases don't spend this repository's Actions
+# minutes. It only builds: checks and tests run before a release, on the source side. Its logs
+# are public, so its steps print as little as they can.
 #
 # Started by hand only (Actions → Release → Run workflow, or `gh workflow run release.yml
 # -R dongdongdongdongding/devalley -f version=X.Y.Z`), so no pull request or fork can reach the
-# CORE_READ_TOKEN secret: a fine-grained token with Contents: Read-only on devalley-core.
+# secrets: CORE_READ_TOKEN (a fine-grained token with Contents: Read-only on devalley-core),
+# CLOUDFLARE_API_TOKEN (R2 object read and write on the devalley-releases bucket only) and
+# CLOUDFLARE_ACCOUNT_ID.
 name: Release
 
 on:
@@ -77,9 +81,13 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: installers-${{ matrix.os }}
+          # The feed (latest.yml) and the setup exe's blockmap come from the Windows build; the
+          # upload script needs them beside the installers.
           path: |
             core/desktop/release/*.exe
             core/desktop/release/*.dmg
+            core/desktop/release/*.blockmap
+            core/desktop/release/latest.yml
           if-no-files-found: error
           retention-days: 1
 
@@ -92,15 +100,32 @@ jobs:
       - uses: actions/checkout@v4
         with:
           path: page
-      - name: Get the page from the source
+      - name: Get the page and the upload script from the source
         uses: actions/checkout@v4
         with:
           repository: ${{ env.SOURCE_REPO }}
           ref: v${{ inputs.version }}
           token: ${{ secrets.CORE_READ_TOKEN }}
           path: core
-          sparse-checkout: public
+          sparse-checkout: |
+            public
+            scripts/release-upload.mjs
+          sparse-checkout-cone-mode: false
           persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - uses: actions/download-artifact@v4
+        with:
+          path: installers
+          merge-multiple: true
+      - name: Upload to devalley.app
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          node core/scripts/release-upload.mjs installers --version "$VERSION" \
+            --notes-url "https://github.com/$GITHUB_REPOSITORY/releases/tag/v$VERSION"
       - name: Bring the download page up to date
         run: |
           rsync -a --delete --exclude .git --exclude .github core/public/ page/
@@ -115,28 +140,32 @@ jobs:
               commit -q -m "Devalley $VERSION"
             git push -q
           fi
-      - uses: actions/download-artifact@v4
-        with:
-          path: installers
-          merge-multiple: true
-      - name: Publish the installers
+      - name: Publish the release notes
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           tag="v$VERSION"
+          # Why a placeholder: a quoted heredoc keeps the backticks as text.
           cat > notes.md <<'NOTES'
           ## Install
 
-          - **Windows:** run `Devalley-*-win-x64-setup.exe` to install (installing over an older version closes it first), or `Devalley-*-win-x64-portable.exe` to run without installing. On the SmartScreen warning choose **More info** → **Run anyway** (the app isn't code-signed yet).
-          - **macOS:** open the `.dmg` for your Mac (`arm64` for Apple silicon, `x64` for Intel) and drag Devalley to Applications. The first time, right-click it and choose **Open**.
+          Installers: **https://devalley.app/get**, or directly:
+
+          - **Windows installer:** https://devalley.app/download/v__V__/Devalley-__V__-win-x64-setup.exe
+          - **Windows portable:** https://devalley.app/download/v__V__/Devalley-__V__-win-x64-portable.exe
+          - **macOS (Apple silicon):** https://devalley.app/download/v__V__/Devalley-__V__-mac-arm64.dmg
+          - **macOS (Intel):** https://devalley.app/download/v__V__/Devalley-__V__-mac-x64.dmg
+
+          Already installed on Windows? Right-click the tray icon and choose **Get __V__**: the app downloads and installs it. On macOS and with the portable build, download it from the links above.
+
+          The app isn't code-signed yet: on the SmartScreen warning choose **More info** → **Run anyway**; on macOS, the first time, right-click Devalley and choose **Open**.
 
           Then click **Connect Claude Code** in the village, and any `claude` session moves in on its next prompt.
           NOTES
+          sed -i "s/__V__/$VERSION/g" notes.md
+          # Why both paths: a release made on GitHub's website already exists when this runs.
           if gh release view "$tag" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
-            gh release upload "$tag" installers/* --repo "$GITHUB_REPOSITORY" --clobber
+            gh release edit "$tag" --repo "$GITHUB_REPOSITORY" --title "Devalley $VERSION" --notes-file notes.md
           else
-            gh release create "$tag" installers/* \
-              --repo "$GITHUB_REPOSITORY" \
-              --title "Devalley $VERSION" \
-              --notes-file notes.md
+            gh release create "$tag" --repo "$GITHUB_REPOSITORY" --title "Devalley $VERSION" --notes-file notes.md
           fi
