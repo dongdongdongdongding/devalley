@@ -20,12 +20,16 @@ A pixel-art village where every coding-agent session is a resident: Claude Code,
 
 Get the installer for your system from **[devalley.app/get](https://devalley.app/get)**, or straight from these links, which always give the latest version:
 
-- **Windows:** the [installer](https://devalley.app/download/latest/win-setup), or the [portable build](https://devalley.app/download/latest/win-portable) to run without installing. The app isn't code-signed yet, so the first launch shows SmartScreen: choose **More info**, then **Run anyway**.
-- **macOS:** the `.dmg` for [Apple silicon](https://devalley.app/download/latest/mac-arm64) or [Intel](https://devalley.app/download/latest/mac-x64). Drag Devalley to Applications, and the first time, right-click it and choose **Open**.
+- **Windows:** the [installer](https://devalley.app/download/latest/win-setup), or the [portable build](https://devalley.app/download/latest/win-portable) to run without installing. The app isn't code-signed yet, so the first launch shows SmartScreen: choose **More info**, then **Run anyway**. The portable build keeps everything the installed one does except what would have to point at its files for later: it doesn't start with Windows, and inviting residents and registering the MCP server work only in the installed build.
+- **macOS:** the `.dmg` for [Apple silicon](https://devalley.app/download/latest/mac-arm64) or [Intel](https://devalley.app/download/latest/mac-x64). Drag Devalley to Applications. The first launch is blocked because the app isn't notarized: on macOS Sequoia (15) and later, open it once, then go to **System Settings → Privacy & Security**, scroll to the message about Devalley and choose **Open Anyway**; on earlier versions, right-click the app and choose **Open**.
 
-Installing a new version over an old one closes the running app first. The tray menu shows the version you have, and when a newer one is out, **Get …** with its number: the Windows installer downloads and installs it right there; on macOS and with the portable build it opens the download page. Each release's notes are on the [Releases](https://github.com/dongdongdongdongding/devalley/releases) page.
+Installing a new version over an old one closes the running app and its village daemon first (the daemon is asked to save and leave; agents' MCP connections to Devalley stay). The tray menu shows the version you have, and when a newer one is out, **Get Devalley …** with its number: the Windows installer downloads and installs it right there; on macOS and with the portable build it opens the download page, and you install the file you get, quit Devalley and open it again. **Check for updates…** says whether you have the latest or the site couldn't be reached. Each release's notes are on the [Releases](https://github.com/dongdongdongdongding/devalley/releases) page.
 
-The first time, the village asks to **Connect Claude Code**. Sessions that are already running join on their next prompt, with no restart; new ones move in as soon as you send them a prompt.
+Devalley lives in the system tray (the menu bar on a Mac): a notice says so the first time. Its icon turns the village window and the walking residents on and off, and the app starts when you log in unless you turn that off in the tray.
+
+The first time, the village asks to **Connect Claude Code**. Sessions that are already running join on their next prompt, with no restart; new ones move in as soon as you send them a prompt. Devalley's hooks need Claude Code 2.1.139 or later; an older one gets the hooks in the form it understands, and if a connected Claude Code never sends a hook, the connect panel says so and asks you to update it.
+
+Uninstalling Devalley takes its hooks out of every agent it was connected to and its MCP server out of Claude Code and Codex. Your data in `~/.devalley/` stays.
 
 Click a resident to see its task, copy the `claude --resume` command for its session, or open its folder. Click a finished resident to mark its work as seen, or its speech bubble to bring its window forward.
 
@@ -142,13 +146,17 @@ The app keeps your residents in front of you while you work, in two ways you can
 
 ![The village window](docs/assets/desktop-village.png)
 
-The app remembers which windows were on and where the village window was. Its tray menu also invites residents and connects agents, and has a **Start when I log in** switch, which is on by default.
+The app remembers which windows were on and where the village window was. Its tray menu also invites residents and connects agents (the usage card gives way to the map while the dialog is open, and comes back after), and has a **Start when I log in** switch, which is on by default. **Village window** is one choice there: the map, usage only, or off. On Windows, **Hide walking residents over fullscreen apps** steps the residents out of the way while a game, a video or a presentation has the whole screen (off by default; the app looks at what is in front every two seconds while it is on). **언어 / Language** switches the village and the tray between Korean and English (the system's language until you choose). When the village keeps stopping, the tray says so with the last line of its log and offers to start it again. **Quit Devalley** stops the village with the app; your agents' sessions go on as they were, and the next start brings the village back.
+
+If something goes wrong: **Open the log folder** in the tray opens `~/.devalley/`, where `daemon.log` is the village's log and `desktop.log` the app's; **Info (copy)** copies the version, the daemon's API and the log path for a report; **Report a problem…** opens the contact page, or write to support@devalley.app.
+
+The village listens on port 4827. If another program has it, the app offers the next free port when it starts (and the connected agents follow); from a terminal, `devalley config port <n>` does the same, and `devalley status` shows the village, the daemon's version, each agent's connection and where the logs are. The command line speaks Korean on a Korean system (`DEVALLEY_LANG=en` or `ko` chooses).
 
 ## Your data
 
 - **It stays on your computer.** The village listens on this computer only, isn't reachable from the network, and other websites can't post to it.
 - **What leaves:** each agent's quota check, sent to that agent's own service with the sign-in it already has; once you connect Slack, the village's own connection to Slack with your app's tokens; and, from the desktop app, a look at devalley.app for a newer version when it starts and once a day (nothing about you is sent), so the tray and the village window's menu can offer it.
-- **What's kept:** your journal, outfits, inbox, to-dos and Slack tokens live in `~/.devalley/`, the tokens readable only by you.
+- **What's kept:** your journal, outfits, inbox, to-dos and Slack tokens live in `~/.devalley/`, the tokens readable only by you; the logs (`daemon.log`, `desktop.log`) are there too.
 - **What changes:** connecting an agent adds Devalley to that agent's user-level settings (inside WSL too, on Windows), with a dated backup of them next to them.
 
 ## History
