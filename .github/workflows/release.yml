@@ -9,7 +9,8 @@
 # Started by hand only (Actions → Release → Run workflow, or `gh workflow run release.yml
 # -R dongdongdongdongding/devalley -f version=X.Y.Z`), so no pull request or fork can reach the
 # secrets: CORE_READ_TOKEN (a fine-grained token with Contents: Read-only on devalley-core),
-# CLOUDFLARE_API_TOKEN (R2 object read and write on the devalley-releases bucket only) and
+# CLOUDFLARE_API_TOKEN (account-wide R2: Admin Read & Write or Workers R2 Storage: Edit; a token
+# scoped to the bucket alone is refused, see docs/platform.md "Releases") and
 # CLOUDFLARE_ACCOUNT_ID.
 name: Release
 
@@ -156,9 +157,9 @@ jobs:
           - **macOS (Apple silicon):** https://devalley.app/download/v__V__/Devalley-__V__-mac-arm64.dmg
           - **macOS (Intel):** https://devalley.app/download/v__V__/Devalley-__V__-mac-x64.dmg
 
-          Already installed on Windows? Right-click the tray icon and choose **Get __V__**: the app downloads and installs it. On macOS and with the portable build, download it from the links above.
+          Already have Devalley? Its tray menu offers **Get Devalley __V__** (in Korean, **새 버전 __V__ 받기**). On Windows the installed app downloads and installs it right there. On macOS and with the portable build your browser downloads the new file: on a Mac, quit Devalley, open the disk image and drag Devalley to Applications, replacing the old one; with the portable build, quit Devalley first, then run the new file.
 
-          The app isn't code-signed yet: on the SmartScreen warning choose **More info** → **Run anyway**; on macOS, the first time, right-click Devalley and choose **Open**.
+          The app isn't code-signed yet. On Windows, on the SmartScreen warning choose **More info** → **Run anyway**. On macOS the first launch is blocked because the app isn't notarized: on macOS Sequoia (15) and later, open it once, then go to **System Settings → Privacy & Security**, scroll to the message about Devalley and choose **Open Anyway**; on earlier versions, right-click the app and choose **Open**.
 
           Then click **Connect Claude Code** in the village, and any `claude` session moves in on its next prompt.
           NOTES
