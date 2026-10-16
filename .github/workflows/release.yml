@@ -157,7 +157,7 @@ jobs:
           - **macOS (Apple silicon):** https://devalley.app/download/v__V__/Devalley-__V__-mac-arm64.dmg
           - **macOS (Intel):** https://devalley.app/download/v__V__/Devalley-__V__-mac-x64.dmg
 
-          Already have Devalley? Its tray menu offers **Get Devalley __V__** (in Korean, **새 버전 __V__ 받기**). On Windows the installed app downloads and installs it right there. On macOS and with the portable build your browser downloads the new file: on a Mac, quit Devalley, open the disk image and drag Devalley to Applications, replacing the old one; with the portable build, quit Devalley first, then run the new file.
+          Already have Devalley? On Windows the installed app downloads __V__ in the background as soon as it finds it, and its tray menu then offers **Install __V__ and restart** (in Korean, **__V__ 설치하고 다시 시작**); it installs only when you click that. On macOS and with the portable build the tray menu offers **Get Devalley __V__…** (in Korean, **새 버전 __V__ 받기…**) and your browser downloads the new file: on a Mac, quit Devalley, open the disk image and drag Devalley to Applications, replacing the old one; with the portable build, quit Devalley first, then run the new file.
 
           The app isn't code-signed yet. On Windows, on the SmartScreen warning choose **More info** → **Run anyway**. On macOS the first launch is blocked because the app isn't notarized: on macOS Sequoia (15) and later, open it once, then go to **System Settings → Privacy & Security**, scroll to the message about Devalley and choose **Open Anyway**; on earlier versions, right-click the app and choose **Open**.
 
