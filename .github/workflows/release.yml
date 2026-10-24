@@ -68,8 +68,14 @@ jobs:
           quiet() { "$@" > "$RUNNER_TEMP/step.log" 2>&1 || { tail -n 30 "$RUNNER_TEMP/step.log"; exit 1; }; }
           quiet npm ci --no-audit --no-fund
           quiet npm run build
-          cd desktop
-          quiet npm ci --no-audit --no-fund
+          # Why any of three folders: the app lives in apps/desktop now, in packages/desktop for tags
+          # of 2026-10-18 to 10-20, in desktop/ before. The upload below reads the one that is there.
+          d=apps/desktop; [ -d "$d" ] || d=packages/desktop; [ -d "$d" ] || d=desktop
+          echo "RELEASE_DIR=core/$d/release" >> "$GITHUB_ENV"
+          cd "$d"
+          # Why only with a lockfile here: before the move the app had one of its own; now the root's
+          # npm ci (workspaces) has installed it already.
+          if [ -f package-lock.json ]; then quiet npm ci --no-audit --no-fund; fi
           quiet npm run dist
           if [ "$RUNNER_OS" = Windows ]; then
             cli=release/win-unpacked/resources/cli
@@ -83,12 +89,14 @@ jobs:
         with:
           name: installers-${{ matrix.os }}
           # The feed (latest.yml) and the setup exe's blockmap come from the Windows build; the
-          # upload script needs them beside the installers.
+          # upload script needs them beside the installers. Why one folder: upload-artifact roots
+          # the artifact at the deepest folder all its paths share, existing or not, and the upload
+          # script reads the files from its top (scripts/check/__tests__/public-release.test.mjs).
           path: |
-            core/desktop/release/*.exe
-            core/desktop/release/*.dmg
-            core/desktop/release/*.blockmap
-            core/desktop/release/latest.yml
+            ${{ env.RELEASE_DIR }}/*.exe
+            ${{ env.RELEASE_DIR }}/*.dmg
+            ${{ env.RELEASE_DIR }}/*.blockmap
+            ${{ env.RELEASE_DIR }}/latest.yml
           if-no-files-found: error
           retention-days: 1
 
@@ -110,7 +118,7 @@ jobs:
           path: core
           sparse-checkout: |
             public
-            scripts/release-upload.mjs
+            scripts/build/release-upload.mjs
           sparse-checkout-cone-mode: false
           persist-credentials: false
       - uses: actions/setup-node@v4
@@ -125,7 +133,7 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
-          node core/scripts/release-upload.mjs installers --version "$VERSION" \
+          node core/scripts/build/release-upload.mjs installers --version "$VERSION" \
             --notes-url "https://github.com/$GITHUB_REPOSITORY/releases/tag/v$VERSION"
       - name: Bring the download page up to date
         run: |
