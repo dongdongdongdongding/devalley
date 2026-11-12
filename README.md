@@ -1,5 +1,7 @@
 # Devalley
 
+> Free desktop app for Windows and macOS that builds an AI agent village on your computer: every AI coding-agent session you run (Claude Code, Codex, Gemini CLI and others) becomes a resident of a pixel-art village.
+
 A pixel-art village where every coding-agent session is a resident: Claude Code, Codex, Gemini CLI, Qwen Code, Copilot CLI, Aider, OpenCode and more. It works with them in any folder and any terminal, IDE or ADE: iTerm, Windows Terminal, PowerShell, the VS Code or Cursor terminal, or a tool that launches the agent for you. It also works inside WSL and in a terminal run as administrator.
 
 - **Residents show what their agent is doing.** Working sessions go to work at the farm, mine, lake, ranch, garden, market or lumberyard, and the valley changes as they work: trees fall and grow back, rocks break, fish are landed, crops ripen and are harvested. A question or permission prompt raises a **?** bubble, and a finished turn cheers **Done!**
@@ -47,6 +49,17 @@ A resident's card is for seeing: who it is, its state in one word with how long 
 Each resident keeps a **diary**, the first tile on its card: what you asked it, what it asked you, and how each turn ended (the first line of its last answer, or the error it stopped on), newest first.
 
 ![A resident's card with its diary](docs/assets/village-diary.png)
+
+## Guides
+
+How-to guides on [devalley.app](https://devalley.app/guides), each checked against the official docs and dated:
+
+- [Check Claude Code and Codex usage limits](https://devalley.app/guides/claude-code-codex-usage)
+- [Claude Code notifications](https://devalley.app/guides/claude-code-notifications)
+- [Managing multiple Claude Code sessions](https://devalley.app/guides/multiple-claude-code-sessions)
+- [Using Claude Code and Codex together](https://devalley.app/guides/claude-code-and-codex-together)
+- [Claude Code approvals and permission requests](https://devalley.app/guides/claude-code-approvals)
+- [Compare](https://devalley.app/compare): other tools side by side with Devalley
 
 ## Other agents
 
