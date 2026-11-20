@@ -50,6 +50,52 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 24
+      # The Rust devalley each app ships beside its CLI (the source's docs/dev-guide.md, "Rust
+      # CLI"): the Mac app's Resources/cli/bin/devalley for `devalley run` and `devalley mcp`, the
+      # Windows app's resources/cli/bin/devalley.exe for the same. The toolchain the source's
+      # rust-toolchain.toml pins, through the runner's rustup, with both Mac targets, as one Mac
+      # job builds the Apple silicon and the Intel app, and Windows' x64 (MSVC: the runner's Visual
+      # Studio links it). A tag from before the Cargo workspace skips all of it; a tag whose Windows
+      # app ships no binary (before 0.21.x's Windows half) has no Windows target in the desktop
+      # build, which then packs none.
+      - name: The Rust toolchain
+        shell: bash
+        working-directory: core
+        run: |
+          if [ ! -f rust-toolchain.toml ]; then exit 0; fi
+          rustup toolchain install
+          if [ "$RUNNER_OS" = macOS ]; then
+            rustup target add aarch64-apple-darwin x86_64-apple-darwin
+          else
+            rustup target add x86_64-pc-windows-msvc
+          fi
+      - name: Cargo's downloads and builds
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry/index
+            ~/.cargo/registry/cache
+            ~/.cargo/git/db
+            core/target
+          key: cargo-${{ runner.os }}-${{ hashFiles('core/rust-toolchain.toml', 'core/Cargo.lock') }}
+          restore-keys: cargo-${{ runner.os }}-
+      # Why before the installers: the desktop build stages target/<triple>/release/devalley for
+      # each architecture into the app (the desktop's stage-rust.mjs) and finds it built.
+      - name: Build the Rust devalley
+        shell: bash
+        working-directory: core
+        run: |
+          if [ ! -f Cargo.toml ]; then exit 0; fi
+          quiet() { "$@" > "$RUNNER_TEMP/rust.log" 2>&1 || { tail -n 30 "$RUNNER_TEMP/rust.log"; exit 1; }; }
+          if [ "$RUNNER_OS" = macOS ]; then
+            for triple in aarch64-apple-darwin x86_64-apple-darwin; do
+              quiet cargo build --release --locked -p devalley-cli --target "$triple"
+              echo "$triple: $(lipo -archs "target/$triple/release/devalley")"
+            done
+          else
+            quiet cargo build --release --locked -p devalley-cli --target x86_64-pc-windows-msvc
+            echo "x86_64-pc-windows-msvc: $(target/x86_64-pc-windows-msvc/release/devalley.exe --version)"
+          fi
       - name: Build the installers
         shell: bash
         working-directory: core
@@ -132,6 +178,30 @@ jobs:
           node -e "if (typeof require('./$cli/node_modules/@lydell/node-pty').spawn !== 'function') process.exit(1)"
           shopt -s nullglob
           for file in release/*.exe release/*.dmg; do basename "$file"; done
+      # Why after the build as well as check-release: each Mac app must carry the binary for its own
+      # architecture (an Intel app with an Apple silicon binary would fall back to Node for good),
+      # and the Apple silicon one must answer this version, as the daemon's start check asks.
+      - name: Check the Rust devalley in the Mac apps
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          if [ ! -f core/Cargo.toml ]; then exit 0; fi
+          for pair in release/mac-arm64/Devalley.app:arm64 release/mac/Devalley.app:x86_64; do
+            app="$(dirname "$RELEASE_DIR")/${pair%:*}"
+            archs=$(lipo -archs "$app/Contents/Resources/cli/bin/devalley")
+            [ "$archs" = "${pair##*:}" ] || { echo "${pair%:*} carries a devalley for $archs" >&2; exit 1; }
+          done
+          answer=$("$(dirname "$RELEASE_DIR")/release/mac-arm64/Devalley.app/Contents/Resources/cli/bin/devalley" --version)
+          [ "$answer" = "$VERSION" ] || { echo "the Rust devalley answers $answer, not $VERSION" >&2; exit 1; }
+      # Why: the Windows app must carry devalley.exe and it must answer this version, as the
+      # daemon's start check asks (a tag whose desktop build packs none for Windows skips this).
+      - name: Check the Rust devalley in the Windows app
+        if: runner.os == 'Windows'
+        shell: bash
+        run: |
+          if ! grep -q x86_64-pc-windows-msvc core/apps/desktop/scripts/rust-binary.mjs 2>/dev/null; then exit 0; fi
+          answer=$("$(dirname "$RELEASE_DIR")/release/win-unpacked/resources/cli/bin/devalley.exe" --version)
+          [ "$answer" = "$VERSION" ] || { echo "the Rust devalley answers $answer, not $VERSION" >&2; exit 1; }
       - uses: actions/upload-artifact@v4
         with:
           name: installers-${{ matrix.os }}
