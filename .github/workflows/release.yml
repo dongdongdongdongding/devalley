@@ -287,7 +287,10 @@ jobs:
         shell: bash
         run: |
           shopt -s nullglob
+          # Why the look: latest.yml is a name, not a pattern, so nullglob keeps it in the list where
+          # the build made none (the Mac's: the feed comes from the Windows build).
           for file in "$RELEASE_DIR"/*.exe "$RELEASE_DIR"/*.dmg "$RELEASE_DIR"/*.blockmap "$RELEASE_DIR"/latest.yml; do
+            [ -e "$file" ] || continue
             node -e "const b=require('fs').readFileSync(process.argv[1]);console.log(require('path').basename(process.argv[1]),b.length,require('crypto').createHash('sha512').update(b).digest('base64'))" "$file"
           done
       - uses: actions/upload-artifact@v4
