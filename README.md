@@ -29,17 +29,16 @@ On Windows, you can wake an ended Codex session or move one from your own termin
 
 Codex app and IDE helper requests do not become residents. Moving an app thread out leaves it in the app; it returns to the village when you start a new turn there.
 
-## What’s new in 0.22.0
+## What’s new in 0.22.1
 
-- **A globe that floats over your work.** On a Mac or Windows PC, a small globe stays where you drop it, always in front. Press it for your residents' status and answer their questions there; its four buttons open Messages, agents, usage and settings. It turns while residents work and shows unread answers as a badge, and its notices stack beside it.
-- **Start a conversation from Messages.** Pick the agent, folder, model, effort and permission from chips above the message box, then send.
-- **Change a running session's model and effort.** The chips list the agent's own models and levels in its own words, pick them in the agent's own menu for you, and show what the agent says it took. OpenCode's model list is searched by name, so a model further down is picked on the first try.
-- **Connections that hold.** One session stays one resident through `/rewind`, `/clear` and a new conversation. A broken link repairs itself and says how it is connected. A paste goes in as one piece, and a send is never refused for text nobody typed.
-- **A first run that signs you in.** An agent that is installed but signed out gets only the sign-in step. The village holds the install or sign-in terminal and shows its last line, with Show terminal window and Cancel.
-- **Skills you can see.** The Terminal tab has a skill bar, each project has a Skills tab, and the timeline shows the skills a turn used.
-- **Photos and videos in messages.** Messages show photo and video previews in a carousel, and a press opens the file in a window.
-- **Village tools at every start.** Each start registers the village tools for your connected agents without asking, and the globe tells you once with an Undo. A village you turn off stays off, with nothing of Devalley's left running.
-- **Fewer agents.** Gemini CLI, Qwen Code, Amp and Aider are no longer supported.
+- **Send the first message just once.** In New conversation, Devalley holds your first message while the session starts. Answer any startup choices there. Your message is sent once the input box is ready.
+- **See your prompt right away.** Messages shows your prompt as soon as you press Enter in a supported terminal. Even without hooks, session records show when work starts or finishes, the current tool and any recorded reason for failure. A question on screen shows when the agent is waiting.
+- **A smoother globe on Mac.** With rotation set to Always, the globe keeps turning smoothly even when every resident is resting.
+- **Current changes for each turn on Mac.** Open a finished turn to see the files that changed during that turn, even in a busy project.
+- **Start an agent on a fresh Mac.** After Devalley installs an agent, you can invite it or open its sign-in terminal straight away.
+- **Review and undo changes made by Devalley.** Open Settings → General → Changes made by Devalley to see which settings changed and restore them.
+- **Keep your terminal sessions running.** Quit the village and keep working in your own terminal. Reopen Devalley to see the same resident again.
+- **Keep using Codex after removing Devalley.** Choose Remove Devalley in Settings → General, or move the Mac app to the Trash. Its app and daemon close within about a minute even if another copy is installed. Shared settings are restored when the last copy is gone. Codex stays available.
 
 ## Download
 
