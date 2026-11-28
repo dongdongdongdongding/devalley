@@ -43,6 +43,13 @@ on:
         description: Check and build, list the installers, and upload nothing anywhere
         type: boolean
         default: false
+      # Why: the upload script comes from the version's tag, so a fault found in it while a release
+      # is half done (0.22.1: a pointer's weak ETag) could only be mended by a new version. With
+      # this the same tag's installers are published by the script of another ref (main).
+      tools_ref:
+        description: Take the upload script from this ref of the source instead of the tag (empty = the tag)
+        required: false
+        default: ''
 
 permissions:
   contents: read
@@ -83,6 +90,22 @@ jobs:
             scripts/build/release-upload.mjs
           sparse-checkout-cone-mode: false
           persist-credentials: false
+      - name: The upload script of another ref, where one was asked for
+        if: ${{ inputs.tools_ref != '' }}
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.SOURCE_REPO }}
+          ref: ${{ inputs.tools_ref }}
+          token: ${{ secrets.CORE_READ_TOKEN }}
+          path: tools
+          sparse-checkout: |
+            scripts/build/release-upload.mjs
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
+      - name: Put that script in the tag's place
+        if: ${{ inputs.tools_ref != '' }}
+        shell: bash
+        run: cp tools/scripts/build/release-upload.mjs core/scripts/build/release-upload.mjs
       - uses: actions/setup-node@v4
         with:
           node-version: 24
@@ -342,6 +365,22 @@ jobs:
             scripts/build/release-upload.mjs
           sparse-checkout-cone-mode: false
           persist-credentials: false
+      - name: The upload script of another ref, where one was asked for
+        if: ${{ inputs.tools_ref != '' }}
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.SOURCE_REPO }}
+          ref: ${{ inputs.tools_ref }}
+          token: ${{ secrets.CORE_READ_TOKEN }}
+          path: tools
+          sparse-checkout: |
+            scripts/build/release-upload.mjs
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
+      - name: Put that script in the tag's place
+        if: ${{ inputs.tools_ref != '' }}
+        shell: bash
+        run: cp tools/scripts/build/release-upload.mjs core/scripts/build/release-upload.mjs
       - uses: actions/setup-node@v4
         with:
           node-version: 24
